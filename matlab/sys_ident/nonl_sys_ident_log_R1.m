@@ -4,8 +4,8 @@ tic
 rng(1);
 
 % Parameters - experiment
-monte = 10;    % No. of experiments
-N = 50000;      % Number of samples
+monte = 50;    % No. of experiments
+N = 25000;      % Number of samples
 L = 8;         % Filter order
 nv = 0.01;     % Noise variance
 
@@ -14,7 +14,7 @@ fraclen = 12;
 wrdlen = 16;
 
 % Delaed update
-del = 10;
+del = 5;
 
 % Parameters - LMS
 mu_LMS = 1/32;       % Step size (1/64)
@@ -30,6 +30,10 @@ HBOTFLAF_par.mu_w = 1/64;     % Step size = 1/128
 HBOTFLAF_par.mu_a = 1/64;       % Step size = 1/64
 P_t = 3;
 HBOTFLAF_par.Q = 2*P_t+1;
+
+% Dummy random variables to match random sequence as in paper
+dummy_rnd1 = mvnrnd(zeros(L,1),eye(L),32);
+dummy_rnd2 = rand(32,1);
 
 % Number of samples used to estimate steady-state MSE
 mse_num_samples = 1000;
@@ -100,6 +104,10 @@ for trial=1:monte
     end
     x = x_white;
     ns = nv*randn(1,N);
+
+    % Dummy random variables to match random sequence as in paper
+    dummy_rnd1 = mvnrnd(zeros(L,1),eye(L),64);
+    dummy_rnd2 = rand(64,1);
 
 %     % Coloured signal generation
 %     x = zeros(1,N);
@@ -259,24 +267,24 @@ for trial=1:monte
 
         % Apply to filters
 % 
-        [e_LMS(i)] = LMS_filter(x_vec(1:L), d(i), w_LMS);
-        [e_TFLAF(i), g_vec] = TFLAF_filter(x(i), d(i), w_TFLAF, g_vec, TFLAF_par);
-        [e_FxdLogTFLAF(i), log_g_vec, log_g_vec_sign, log_g_vec_zero] = LogTFLAF_filter_fxd(x(i), d(i), w_FxdLogTFLAF, log_g_vec, log_g_vec_zero, log_g_vec_sign, TFLAF_par, fraclen, lut_fraclen, wrdlen, logsin16, logcos16, log_acc_lut12, antilog_lut12, log_lut12);
+%         [e_LMS(i)] = LMS_filter(x_vec(1:L), d(i), w_LMS);
+%         [e_TFLAF(i), g_vec] = TFLAF_filter(x(i), d(i), w_TFLAF, g_vec, TFLAF_par);
+%         [e_FxdLogTFLAF(i), log_g_vec, log_g_vec_sign, log_g_vec_zero] = LogTFLAF_filter_fxd(x(i), d(i), w_FxdLogTFLAF, log_g_vec, log_g_vec_zero, log_g_vec_sign, TFLAF_par, fraclen, lut_fraclen, wrdlen, logsin16, logcos16, log_acc_lut12, antilog_lut12, log_lut12);
 %         [e_FxdLogTFLAF(i), log_g_vec, log_g_vec_sign, log_g_vec_zero] = LogTFLAF_filter_fxd(x(i), d(i), w_FxdLogTFLAF, log_g_vec, log_g_vec_zero, log_g_vec_sign, TFLAF_par, fraclen, lut_fraclen, wrdlen, sin16, cos16, log_lut12, antilog_lut12, log_acc_lut12);
-          [e_FxdTFLAF(i), g_vec_fxd] = TFLAF_filter_fxd(x(i), d(i), w_FxdTFLAF, g_vec_fxd, TFLAF_par, fraclen, lut_fraclen, wrdlen, sin16, cos16);
+%           [e_FxdTFLAF(i), g_vec_fxd] = TFLAF_filter_fxd(x(i), d(i), w_FxdTFLAF, g_vec_fxd, TFLAF_par, fraclen, lut_fraclen, wrdlen, sin16, cos16);
         [e_HBOTFLAF(i), s_vec_HBOTFLAF, g_vec_HBOTFLAF] = HBOTFLAF_filter(x(i), d(i), w_HBOTFLAF, a_HBOTFLAF, s_vec_HBOTFLAF, g_vec_HBOTFLAF, HBOTFLAF_par);   
         [e_FxdHBOTFLAF(i), s_vec_fxd_HBOTFLAF, g_vec_fxd_HBOTFLAF] = HBOTFLAF_filter_fxd(x(i), d(i), w_FxdHBOTFLAF, a_FxdHBOTFLAF, s_vec_fxd_HBOTFLAF, g_vec_fxd_HBOTFLAF, HBOTFLAF_par, fraclen, wrdlen, sin16, cos16, lut_fraclen);
         [e_FxdLogHBOTFLAF(i), log_s_vec_fxd_HBOTFLAF, log_s_vec_sign_fxd, log_s_vec_zero_fxd, log_g_vec_fxd_HBOTFLAF, log_g_vec_sign_fxd, log_g_vec_zero_fxd] = LogHBOTFLAF_filter_fxd(x(i), d(i), w_FxdLogHBOTFLAF, a_FxdLogHBOTFLAF, log_s_vec_fxd_HBOTFLAF, log_s_vec_sign_fxd, log_s_vec_zero_fxd, log_g_vec_fxd_HBOTFLAF, log_g_vec_sign_fxd, log_g_vec_zero_fxd, HBOTFLAF_par, fraclen, wrdlen, logsin16, logcos16, antilog_lut12, log_lut12, lut_fraclen, log_acc_lut12, log_fraclen);
-%         [e_FxdLogHBOTFLAF(i), log_s_vec_fxd_HBOTFLAF, log_s_vec_sign_fxd, log_s_vec_zero_fxd, log_g_vec_fxd_HBOTFLAF, log_g_vec_sign_fxd, log_g_vec_zero_fxd] = LogHBOTFLAF_filter_fxd(x(i), d(i), w_FxdLogHBOTFLAF, a_FxdLogHBOTFLAF, log_s_vec_fxd_HBOTFLAF, log_s_vec_sign_fxd, log_s_vec_zero_fxd, log_g_vec_fxd_HBOTFLAF, log_g_vec_sign_fxd, log_g_vec_zero_fxd, HBOTFLAF_par, fraclen, wrdlen, sin16, cos16, antilog_lut12, log_lut12, lut_fraclen, log_acc_lut12, log_fraclen);
+%         [e_FxdLogHBOTFLAF(i), log_s_vec_fxd_HBOTFLAF, log_s_vec_sign_fxd, log_s_vec_zero_fxd, log_g_vec_fxd_HBOTFLAF, log_g_vec_sign_fxd, log_g_vec_zero_fxd] = LogHBOTFLAF_filter_fxd_mitch(x(i), d(i), w_FxdLogHBOTFLAF, a_FxdLogHBOTFLAF, log_s_vec_fxd_HBOTFLAF, log_s_vec_sign_fxd, log_s_vec_zero_fxd, log_g_vec_fxd_HBOTFLAF, log_g_vec_sign_fxd, log_g_vec_zero_fxd, HBOTFLAF_par, fraclen, wrdlen, sin16, cos16, antilog_lut12, log_lut12, lut_fraclen, log_acc_lut12, log_fraclen);
 
         % Apply weight update
 
         if (i > del)
-            [w_LMS] = LMS_update(x_vec(del+1:end), w_LMS, mu_LMS, e_LMS(i-del));
-            [w_TFLAF] = TFLAF_update(w_TFLAF, e_TFLAF(i-del), g_vec(del*TFLAF_par.Q_t+1:end), TFLAF_par);
-            [w_FxdLogTFLAF] = LogTFLAF_update_fxd(w_FxdLogTFLAF, e_FxdLogTFLAF(i-del), log_g_vec(del*TFLAF_par.Q_t+1:end), log_g_vec_zero(del*TFLAF_par.Q_t+1:end), log_g_vec_sign(del*TFLAF_par.Q_t+1:end), TFLAF_par, fraclen, wrdlen, log_lut12, antilog_lut12);
+%             [w_LMS] = LMS_update(x_vec(del+1:end), w_LMS, mu_LMS, e_LMS(i-del));
+%             [w_TFLAF] = TFLAF_update(w_TFLAF, e_TFLAF(i-del), g_vec(del*TFLAF_par.Q_t+1:end), TFLAF_par);
+%             [w_FxdLogTFLAF] = LogTFLAF_update_fxd(w_FxdLogTFLAF, e_FxdLogTFLAF(i-del), log_g_vec(del*TFLAF_par.Q_t+1:end), log_g_vec_zero(del*TFLAF_par.Q_t+1:end), log_g_vec_sign(del*TFLAF_par.Q_t+1:end), TFLAF_par, fraclen, wrdlen, log_lut12, antilog_lut12);
 
-            [w_FxdTFLAF] = TFLAF_update_fxd(w_FxdTFLAF,e_FxdTFLAF(i-del),g_vec_fxd(del*TFLAF_par.Q_t+1:end), TFLAF_par, fraclen, wrdlen);
+%             [w_FxdTFLAF] = TFLAF_update_fxd(w_FxdTFLAF,e_FxdTFLAF(i-del),g_vec_fxd(del*TFLAF_par.Q_t+1:end), TFLAF_par, fraclen, wrdlen);
             [w_HBOTFLAF, a_HBOTFLAF] = HBOTFLAF_update(w_HBOTFLAF, a_HBOTFLAF, s_vec_HBOTFLAF(del+1:end), g_vec_HBOTFLAF(del+1:end,:), e_HBOTFLAF(i-del), HBOTFLAF_par);                           
             [w_FxdLogHBOTFLAF, a_FxdLogHBOTFLAF] = LogHBOTFLAF_update_fxd(w_FxdLogHBOTFLAF, a_FxdLogHBOTFLAF, log_s_vec_fxd_HBOTFLAF(del+1:end), log_s_vec_sign_fxd(del+1:end), log_s_vec_zero_fxd(del+1:end), log_g_vec_fxd_HBOTFLAF(del+1:end,:), log_g_vec_sign_fxd(del+1:end,:), log_g_vec_zero_fxd(del+1:end,:), e_FxdLogHBOTFLAF(i-del), HBOTFLAF_par, fraclen, wrdlen, log_lut12, antilog_lut12, log_acc_lut12, log_fraclen);
             [w_FxdHBOTFLAF, a_FxdHBOTFLAF] = HBOTFLAF_update_fxd(w_FxdHBOTFLAF, a_FxdHBOTFLAF, s_vec_fxd_HBOTFLAF(del+1:end), g_vec_fxd_HBOTFLAF(del+1:end,:), e_FxdHBOTFLAF(i-del), HBOTFLAF_par, fraclen, wrdlen);
