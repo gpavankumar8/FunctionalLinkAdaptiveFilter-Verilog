@@ -67,7 +67,7 @@ module hbotflaf_top
 
     // Non-linearity weights (a)
     // fir_taps #(WIDTH, QP, Q_ORD) NONL_FIR(nonl_x_out_packed, a_weight_packed, a_out_packed); 
-    fir_taps #(WIDTH, QP, Q_ORD,3,3) NONL_FIR(nonl_x_out_d_packed, a_weight_packed, a_out_packed); 
+    fir_taps #(WIDTH, QP, Q_ORD, 2, 2) NONL_FIR(nonl_x_out_d_packed, a_weight_packed, a_out_packed); 
     DelayNUnit #(Q_ORD*WIDTH, 1) NONL_MULT_OUT_PIP(clk, reset, a_out_packed, a_out_packed_d);              // Retiming delay after NONL FIR multipliers
 
     // adder_tree #(WIDTH, Q_ORD+1) NONL_ADD1(.adder_tree_in_packed({a_out_packed,{WIDTH{1'b0}}}), .adder_tree_out(s_out)); 
@@ -138,7 +138,7 @@ module hbotflaf_top
         begin: weights_nonl
             // dot_product #(WIDTH, QP, L_ORD) WEIGHT_PIP({nonl_filter_in_packed[a], nonl_filter_in[a][0]}, weight_packed, weight_pip_prod[a]);
             // dot_product #(WIDTH, QP, L_ORD) WEIGHT_PIP(nonl_filter_in_packed[a][(L_ORD+A_PIP-1)*WIDTH-1:(A_PIP-1)*WIDTH], weight_packed, weight_pip_prod[a]);
-            dot_product_d #(WIDTH, QP, L_ORD,3) WEIGHT_PIP(clk, reset, nonl_filter_in_packed[a][(L_ORD+A_PIP-2)*WIDTH-1:(A_PIP-2)*WIDTH], weight_packed, weight_pip_prod[a]);
+            dot_product_d #(WIDTH, QP, L_ORD, 2) WEIGHT_PIP(clk, reset, nonl_filter_in_packed[a][(L_ORD+A_PIP-2)*WIDTH-1:(A_PIP-2)*WIDTH], weight_packed, weight_pip_prod[a]);
             DelayNUnit #(WIDTH, 1) VMM_OUT_PIP(clk, reset, weight_pip_prod[a], weight_pip_prod_d[a]);
             w_update_d #(WIDTH, QP) A_WUB( clk, reset, mu_a_error_d, weight_pip_prod_d[a], a_weight[a]); 
             // filter_tap #(WIDTH, QP) A_TAP( clk, reset, nonl_x_out_d[a], mu_a_error_d, weight_pip_prod[a], a_out[a], a_weight[a]);
