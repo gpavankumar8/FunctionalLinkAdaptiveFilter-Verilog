@@ -30,14 +30,14 @@ module hbotflaf_tb() ;
   parameter QP = 12;
   parameter N = 25000;
   parameter NUM_TRIAL = 50;
-  parameter RET = 6;
+  parameter RET = 5;
 
   reg              clk, rst;
   reg  [WIDTH-1:0] x, d;
   wire [WIDTH-1:0] y, error;
 
-  // hbotflaf_top#(L_ORD, Q_ORD, WIDTH, QP) HBOTFLAF_DUT( .clk(clk), .reset(rst), .signal_in(x), .desired_in(d), .filter_out_d(y), .error_d(error));
- hbotflaf_top HBOTFLAF_DUT( .clk(clk), .reset(rst), .signal_in(x), .desired_in(d), .filter_out_d(y), .error_d(error));
+  hbotflaf_top#(L_ORD, Q_ORD, WIDTH, QP) HBOTFLAF_DUT( .clk(clk), .reset(rst), .signal_in(x), .desired_in(d), .filter_out_d(y), .error_d(error));
+//  hbotflaf_top HBOTFLAF_DUT( .clk(clk), .reset(rst), .signal_in(x), .desired_in(d), .filter_out_d(y), .error_d(error));
 
   //initial begin
     //$dumpfile("dump.vcd");
